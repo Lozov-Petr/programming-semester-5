@@ -1,0 +1,20 @@
+Grammar   ->
+Grammar   -> Product Products
+Products  ->
+Products  -> \n Product Products
+Product   -> Head \s - > Tail
+Head      -> Variable
+Tail      ->
+Tail      -> \s Charaster Tail
+Charaster -> Variable
+Charaster -> Terminal
+Variable  -> UpperChar VarTail
+VarTail   ->
+VarTail   -> UpperChar VarTail
+VarTail   -> Terminal VarTail
+Terminal  -> a
+Terminal  -> b
+Terminal  -> c
+UpperChar -> \A
+UpperChar -> \B
+UpperChar -> \C

@@ -1,0 +1,21 @@
+Number   -> Integer
+Number   -> Real
+Integer  -> Digit
+Integer  -> Integer Digit
+Real     -> Integer Fraction Scale
+Fraction -> . Integer
+Scale    -> e Sign Integer
+Scale    -> Empty
+Digit    -> 0
+Digit    -> 1
+Digit    -> 2
+Digit    -> 3
+Digit    -> 4
+Digit    -> 5
+Digit    -> 6
+Digit    -> 7
+Digit    -> 8
+Digit    -> 9
+Empty    ->
+Sign     -> +
+Sign     -> -
