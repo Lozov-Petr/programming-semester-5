@@ -99,6 +99,35 @@ namespace HamiltinianCompletion
 
         #endregion
 
+        #region Add Cicle
+
+        public void AddCicle(List<V> cicle)
+        {
+            int? prevVertex = null;
+
+            foreach (var currVertex in cicle)
+            {
+                var curr = Internal(currVertex);
+                if (prevVertex != null)
+                {
+                    var prev = (int)prevVertex;
+                    if (!ContainsEdge(prev, curr))
+                        if (prev < curr) graph.AddEdge(new UndirectedEdge<int>(prev, curr));
+                        else graph.AddEdge(new UndirectedEdge<int>(curr, prev));
+                }
+                prevVertex = curr;
+            }
+
+            var last = (int)prevVertex;
+            var first = Internal(cicle[0]);
+   
+            if (!ContainsEdge(first, last))
+                if (first < last) graph.AddEdge(new UndirectedEdge<int>(first, last));
+                else graph.AddEdge(new UndirectedEdge<int>(last, first));
+        }
+
+        #endregion
+
         #region Read/Write
 
         public static Graph<string> ReadInDotFile(string filePath)
@@ -107,7 +136,10 @@ namespace HamiltinianCompletion
             var stream = new StreamReader(filePath);
             var dotGraph = parser.Parse(stream);
 
+
+
             var vertices = new List<string>();
+            
             foreach (var vertex in dotGraph.Vertices) vertices.Add(vertex.Id);
 
             var edges = new List<UndirectedEdge<string>>();
@@ -310,8 +342,7 @@ namespace HamiltinianCompletion
             var notEnd = true;
 
             var bestCicle = new int[graph.VertexCount];
-            bestCicle[0] = 0;
-            var bestAddOn = graph.VertexCount;
+            var bestAddOn = graph.VertexCount + 1;
 
             var perm = new Permutation(graph.VertexCount - 1);
 
@@ -363,7 +394,7 @@ namespace HamiltinianCompletion
 
             var currPathAndAddOn = Struct.PopBest();
 
-            while (currPathAndAddOn != null)
+            while (currPathAndAddOn != null && maxAddOn != 0)
             {
                 var currPath = currPathAndAddOn.Item1;
                 var currAddOn = currPathAndAddOn.Item2;
@@ -416,20 +447,24 @@ namespace HamiltinianCompletion
 
         public Completion<V> GeneticAlgorithm()
         {
-            return GeneticAlgorithm(20, 5000, 200, 0.02d);
+            return GeneticAlgorithm(200, 5000, 200, 0.02d);
         }
 
         public Completion<V> GeneticAlgorithm(int selectionCount, int maxCountSteps, int maxUnchangetWaiting, double mutationProbability)
         {
             if (graph.VertexCount < 5) return BruteForceSearchAlgorithm();
 
-            var count = selectionCount * (selectionCount + 1) / 2;
+            var count = 2 * selectionCount;
 
-            var cicles = new StructForGA(graph.VertexCount, selectionCount, mutationProbability, ContainsEdge);
+            var currMutationProbability = mutationProbability;
+
+            var cicles = new StructForGA(graph.VertexCount - 1, selectionCount, mutationProbability, ContainsEdge);
 
             cicles.CreateStartData();
             var bestCicles = cicles.Selection();
             var bestAddOn = cicles.BestAddOn();
+            var bestCicle = new int[graph.VertexCount - 1];
+            for (int i = 0; i < graph.VertexCount - 1; ++i) bestCicle[i] = bestCicles[0][i];
 
             var countStepsAfterLastChange = 0;
             var countSteps = 0;
@@ -441,12 +476,22 @@ namespace HamiltinianCompletion
             var allStepsControl = maxCountSteps > 0
                                 ? new Predicate<int>(c => c < maxCountSteps)
                                 : new Predicate<int>(c => true);
+            ////////
+            //int acc = 0;
+            //for (int i = 0; i < graph.VertexCount; ++i) acc += cicles.lengths[i] * i;
+            // 
+            //Console.WriteLine("S {0} {1} {2} {3}", countStepsAfterLastChange, bestAddOn, (float)acc / (float)selectionCount, currMutationProbability);
+            ////////
 
-            while (stepsAfterLastChangeControl(countStepsAfterLastChange) && allStepsControl(countSteps))
+            while (stepsAfterLastChangeControl(countStepsAfterLastChange) && allStepsControl(countSteps) && bestAddOn != 0)
             {
-                for (int i = 0; i < selectionCount - 1; ++i)
-                    for (int j = i + 1; j < selectionCount; ++j)
-                        cicles.Add(cicles.Crossover(bestCicles[i], bestCicles[j]));
+                for (int i = 0; i < count; ++i)
+                {
+                    var indexCicle1 = rnd.Next(selectionCount);
+                    var indexCicle2 = rnd.Next(selectionCount - 1);
+                    if (indexCicle2 >= indexCicle1) ++indexCicle2;
+                    cicles.Add(cicles.Crossover(bestCicles[indexCicle1], bestCicles[indexCicle2]));
+                }
 
                 bestCicles = cicles.Selection();
 
@@ -454,19 +499,30 @@ namespace HamiltinianCompletion
 
                 if (newBestAddOn < bestAddOn)
                 {
+                    currMutationProbability = mutationProbability;
                     bestAddOn = newBestAddOn;
+                    for (int i = 0; i < graph.VertexCount - 1; ++i) bestCicle[i] = bestCicles[0][i];
                     countStepsAfterLastChange = 0;
                 }
-                else ++countStepsAfterLastChange;
+                else
+                {
+                    currMutationProbability = Math.Min(0.01d + currMutationProbability, 1);
+                    ++countStepsAfterLastChange;
+                }
 
                 ++countSteps;
 
-                if (bestAddOn == 0) break;
+                ////////
+                //acc = 0;
+                //for (int i = 0; i < graph.VertexCount; ++i) acc += cicles.lengths[i] * i;
+                //
+                //Console.WriteLine("{0} {1} {2} {3} {4}", countSteps, countStepsAfterLastChange, bestAddOn, (float)acc / (float)selectionCount, currMutationProbability);
+                ////////
             }
 
-            var completion = External(new List<int>(bestCicles[0]));
-
-            return new Completion<V>(completion, bestAddOn);
+            var internalComplection = new List<int>(bestCicle);
+            internalComplection.Add(0);
+            return new Completion<V>(External(internalComplection), bestAddOn);
         }
 
         #endregion

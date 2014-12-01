@@ -16,5 +16,11 @@ namespace HamiltinianCompletion
             Cicle = cicle;
             AddOn = addOn;
         }
+
+        public override string ToString()
+        {
+            var cicle = String.Join("--", Cicle);
+            return String.Concat("Cicle: ", cicle, "\r\nAddOn: ", AddOn.ToString(), "\r\n");
+        }
     }
 }

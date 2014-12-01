@@ -18,6 +18,7 @@ namespace HamiltinianCompletion
         public int[] lengths;
 
         static Random rnd = new Random();
+        static float isIncest = 0.95f;
 
         public StructForGA(int _vertexCount, int _selectionCount, double _mutationProbability, Func<int, int, bool> _contains)
         {
@@ -26,10 +27,10 @@ namespace HamiltinianCompletion
             vertexCount = _vertexCount;
             mutationProbability = _mutationProbability;
 
-            count = selectionCount * (selectionCount + 1) / 2;
-            cicles = new int[vertexCount + 1][][];
-            lengths = new int[vertexCount + 1];
-            for (int i = 0; i <= vertexCount; ++i) cicles[i] = new int[count][];
+            count = 3 * selectionCount;
+            cicles = new int[vertexCount + 2][][];
+            lengths = new int[vertexCount + 2];
+            for (int i = 0; i <= vertexCount + 1; ++i) cicles[i] = new int[count][];
         }
 
         public int TargetFunction(int[] cicle)
@@ -39,7 +40,8 @@ namespace HamiltinianCompletion
             for (int i = 1; i < vertexCount; ++i)
                 if (!contains(cicle[i - 1], cicle[i])) ++addOn;
 
-            if (!contains(cicle[0], cicle[vertexCount - 1])) ++addOn;
+            if (!contains(0, cicle[0])) ++addOn;
+            if (!contains(0, cicle[vertexCount - 1])) ++addOn;
 
             return addOn;
         }
@@ -49,7 +51,7 @@ namespace HamiltinianCompletion
             var cicle = new int[vertexCount];
             var rest = new int[vertexCount];
 
-            for (int i = 0; i < vertexCount; ++i) rest[i] = i;
+            for (int i = 0; i < vertexCount; ++i) rest[i] = i + 1;
 
             for (int i = vertexCount - 1; i >= 0; --i)
             {
@@ -61,14 +63,17 @@ namespace HamiltinianCompletion
             return cicle;
         }
 
-        public bool EqualCicles(int[] cicle1, int[] cicle2)
+        public bool IsRelatives(int[] cicle1, int[] cicle2)
         {
-            bool result = true;
+            int minCorrectDiffCount = (int)((1f - isIncest) * vertexCount);
+            int diffCount = 0;
 
-            for (int i = 0; result && i < vertexCount; ++i)
-                result = cicle1[i] == cicle2[i];
-
-            return result;
+            for (int i = 0; i < vertexCount; ++i)
+            {
+                diffCount += cicle1[i] == cicle2[i] ? 0 : 1;
+                if (diffCount > minCorrectDiffCount) return false;
+            }
+            return true;
         }
 
         public void Add(int[] cicle)
@@ -95,7 +100,7 @@ namespace HamiltinianCompletion
             var index = 0;
             var bestCicles = new int[selectionCount][];
 
-            for (int i = 0; i <= vertexCount; ++i)
+            for (int i = 0; i <= vertexCount + 1; ++i)
                 if (index == selectionCount)
                 {
                     cicles[i] = new int[count][];
@@ -105,24 +110,26 @@ namespace HamiltinianCompletion
                 {
                     while (lengths[i] > 0 && IsBad(cicles[i][lengths[i] - 1])) cicles[i][--lengths[i]] = null;
 
-                    for (int j = 0; j < lengths[i]; ++j)
+                    for (int j = lengths[i] - 1; j > 0 ; --j)
                     {
-                        if (IsBad(cicles[i][j]))
-                        {
-                            cicles[i][j] = cicles[i][lengths[i] - 1];
-                            cicles[i][--lengths[i]] = null;
-                            while (lengths[i] > 0 && IsBad(cicles[i][lengths[i] - 1])) cicles[i][--lengths[i]] = null;
-                        }
                         bestCicles[index++] = cicles[i][j];
+                        
+                        if (IsBad(cicles[i][j - 1]))
+                        {
+                            cicles[i][--j] = cicles[i][lengths[i] - 1];
+                            cicles[i][--lengths[i]] = null;
+                        }
                         if (index == selectionCount)
                         {
                             var truncatedArr = new int[count][];
-                            for (int k = 0; k <= j; ++k) truncatedArr[k] = cicles[i][k];
+                            for (int k = 0; k <= lengths[i] - j - 1; ++k) truncatedArr[k] = cicles[i][j + k];
                             cicles[i] = truncatedArr;
-                            lengths[i] = j + 1;
+                            lengths[i] = lengths[i] - j;
                             break;
                         }
                     }
+
+                    if (lengths[i] > 0 && index < selectionCount) bestCicles[index++] = cicles[i][0];
                 }
             return bestCicles;
         }
@@ -143,32 +150,39 @@ namespace HamiltinianCompletion
             
             if (IsBad(cicle1) || IsBad(cicle2)) return RandomCicle();
 
-            if (EqualCicles(cicle1, cicle2))
+            if (IsRelatives(cicle1, cicle2))
             {
                 MakeBad(cicle2);
                 return RandomCicle();
             }
             
             var result = new int[vertexCount];
-            var rest = new bool[vertexCount];
-
-            for (int i = 0; i < vertexCount; ++i) rest[i] = true;
+            var rest = new int[vertexCount];
+            var restIndexes = new int[vertexCount];
 
             for (int i = 0; i < vertexCount; ++i)
             {
-                if (rest[cicle1[i]])
-                    if (rest[cicle2[i]]) result[i] = rnd.Next(2) == 0 ? cicle1[i] : cicle2[i];
+                rest[i] = i + 1;
+                restIndexes[i] = i;
+            }
+
+            for (int i = 0; i < vertexCount; ++i)
+            {
+                if (restIndexes[cicle1[i] - 1] >= 0)
+                    if (restIndexes[cicle2[i] - 1] >= 0) result[i] = rnd.Next(2) == 0 ? cicle1[i] : cicle2[i];
                     else result[i] = cicle1[i];
                 else
-                    if (rest[cicle2[i]]) result[i] = cicle2[i];
-                    else
-                    {
-                        var goodVertex = 0;
-                        while (!rest[goodVertex]) ++goodVertex;
-                        result[i] = goodVertex;
-                    }
+                    if (restIndexes[cicle2[i] - 1] >= 0) result[i] = cicle2[i];
+                    else result[i] = rest[rnd.Next(vertexCount - i - 1)];
 
-                rest[result[i]] = false;
+                var index = restIndexes[result[i] - 1];
+                if (index == vertexCount - i - 1) restIndexes[result[i] - 1] = -1;
+                else
+                {
+                    rest[index] = rest[vertexCount - i - 1];
+                    restIndexes[rest[index] - 1] = restIndexes[result[i] - 1];
+                    restIndexes[result[i] - 1] = -1;
+                }
             }
 
             if (rnd.NextDouble() < mutationProbability) Mutation(result);

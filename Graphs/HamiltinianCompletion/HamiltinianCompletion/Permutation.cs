@@ -26,6 +26,7 @@
             var size = perm.Length;
 
             var index1 = size - 3;
+            if (index1 < 0) return false;
 
             while (index1 > 0 && perm[index1] > perm[index1 + 1]) --index1;
 
