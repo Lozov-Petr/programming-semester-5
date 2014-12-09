@@ -1,4 +1,4 @@
----------------------------------------------------------------
+﻿---------------------------------------------------------------
 -- Создание таблиц и PK
 ---------------------------------------------------------------
 
@@ -18,6 +18,7 @@ CREATE TABLE LP_Client
 CREATE TABLE LP_Aircraft
 (
 	AircraftID			INTEGER			NOT NULL,
+	Number              VARCHAR(10)     NOT NULL,
 	Type				VARCHAR(20)		NOT NULL,
 	CountOfVacantSeats  INTEGER 		NOT NULL,
 
@@ -41,6 +42,7 @@ CREATE TABLE LP_Flight
 
 CREATE TABLE LP_Order
 (
+	OrderID             INTEGER         NOT NULL IDENTITY PRIMARY KEY,
 	FlightID		 	INTEGER			NOT NULL,
 	ClientID 			INTEGER 		NOT NULL,
 	Number 				VARCHAR(30)		NOT NULL,
@@ -118,14 +120,14 @@ INSERT INTO LP_Client(ClientID, Name, Surname, CreditCardNumber, PassportNumber)
 INSERT INTO LP_Client(ClientID, Name, Surname, CreditCardNumber, PassportNumber) VALUES (14, 'Roman',  'Tasov',    NULL                , '3939-000002');
 
 
-INSERT INTO LP_Aircraft(AircraftID, Type, CountOfVacantSeats) VALUES (1, 'BOEING 777-300', 373);
-INSERT INTO LP_Aircraft(AircraftID, Type, CountOfVacantSeats) VALUES (2, 'BOEING 777-300', 373);
-INSERT INTO LP_Aircraft(AircraftID, Type, CountOfVacantSeats) VALUES (3, 'TU-214',         230);
-INSERT INTO LP_Aircraft(AircraftID, Type, CountOfVacantSeats) VALUES (4, 'TU-214',         230);
-INSERT INTO LP_Aircraft(AircraftID, Type, CountOfVacantSeats) VALUES (5, 'TU-214',         230);
-INSERT INTO LP_Aircraft(AircraftID, Type, CountOfVacantSeats) VALUES (6, 'BOEING 737-500', 101);
-INSERT INTO LP_Aircraft(AircraftID, Type, CountOfVacantSeats) VALUES (7, 'BOEING 747-400', 522);
-INSERT INTO LP_Aircraft(AircraftID, Type, CountOfVacantSeats) VALUES (8, 'BOEING 737-500', 101);
+INSERT INTO LP_Aircraft(AircraftID, Number, Type, CountOfVacantSeats) VALUES (1, 'A001', 'BOEING 777-300', 373);
+INSERT INTO LP_Aircraft(AircraftID, Number, Type, CountOfVacantSeats) VALUES (2, 'A002', 'BOEING 777-300', 373);
+INSERT INTO LP_Aircraft(AircraftID, Number, Type, CountOfVacantSeats) VALUES (3, 'B001', 'TU-214',         230);
+INSERT INTO LP_Aircraft(AircraftID, Number, Type, CountOfVacantSeats) VALUES (4, 'B002', 'TU-214',         230);
+INSERT INTO LP_Aircraft(AircraftID, Number, Type, CountOfVacantSeats) VALUES (5, 'B003', 'TU-214',         230);
+INSERT INTO LP_Aircraft(AircraftID, Number, Type, CountOfVacantSeats) VALUES (6, 'C001', 'BOEING 737-500', 101);
+INSERT INTO LP_Aircraft(AircraftID, Number, Type, CountOfVacantSeats) VALUES (7, 'D001', 'BOEING 747-400', 522);
+INSERT INTO LP_Aircraft(AircraftID, Number, Type, CountOfVacantSeats) VALUES (8, 'C002', 'BOEING 737-500', 101);
 
 
 INSERT INTO LP_Flight(FlightID, AircraftID, Number, PlaceOfDeparture, PlaceOfArrival, TimeOfDeparture, TimeOfArrival)
@@ -145,7 +147,7 @@ INSERT INTO LP_Flight(FlightID, AircraftID, Number, PlaceOfDeparture, PlaceOfArr
 INSERT INTO LP_Flight(FlightID, AircraftID, Number, PlaceOfDeparture, PlaceOfArrival, TimeOfDeparture, TimeOfArrival)
 	VALUES (8, 2, 'AF-8901', 'New-York', 'Las-Vegas',        '2014-10-09 06:30', '2014-10-09 08:59');
 INSERT INTO LP_Flight(FlightID, AircraftID, Number, PlaceOfDeparture, PlaceOfArrival, TimeOfDeparture, TimeOfArrival)
-	VALUES (9, 4, 'AF-8901', 'Paris',    'Tokyo',            '2014-10-09 10:50', '2014-10-10 06:00');
+	VALUES (9, 4, 'AF-8906', 'Paris',    'Tokyo',            '2014-10-09 10:50', '2014-10-10 06:00');
 
 
 INSERT INTO LP_Order(FlightID, ClientID, Number, Price, TimeOfOrder, NumberOfSeats) VALUES (1, 1,  'T0001', 30000, '2014-10-01 10:14', 31);

@@ -1,5 +1,5 @@
 -- Список: Номер рейса - Тип самолёта (без JOIN)
-SELECT Number, Type FROM LP_Flight, LP_Aircraft WHERE LP_Aircraft.AircraftID = LP_Flight.AircraftID;
+SELECT LP_Flight.Number, Type FROM LP_Flight, LP_Aircraft WHERE LP_Aircraft.AircraftID = LP_Flight.AircraftID;
 
 
 -- Список: номер заказа - фамилия пассажира (если у пассажира нет заказов, то есть в таблице со значением NULL)
