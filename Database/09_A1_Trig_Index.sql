@@ -2,7 +2,7 @@
 -- Проверка корректности рейса (взлетает раньше, чем садися и не летит туда, откуза вылетел)
 CREATE TRIGGER ValidationFlight ON LP_Flight INSTEAD OF INSERT
 AS 
-    IF EXISTS(SELECT COUNT(*) FROM INSERTED WHERE TimeOfDeparture > TimeOfArrival OR PlaceOfDeparture = PlaceOfArrival)
+    IF EXISTS(SELECT * FROM INSERTED WHERE TimeOfDeparture > TimeOfArrival OR PlaceOfDeparture = PlaceOfArrival)
         ROLLBACK;
 
 GO
