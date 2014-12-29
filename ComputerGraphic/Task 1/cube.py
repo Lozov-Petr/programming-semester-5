@@ -15,47 +15,58 @@ def DrawScene():
     glViewport(0, 0, 500, 500)
     glLoadIdentity()
 
-    glMatrixMode(GL_PROJECTION)
-    if VIEW == 0 : glOrtho(-1.1, 1.1, -1.1, 1.1, -5, 10)
-    else : gluPerspective(VIEW + 25, 1, 0, 10)
+    h = 1
+
+    # glMatrixMode(GL_PROJECTION)
+    if VIEW == 0 : glOrtho(-h, h, -h, h, 0, 2*h)
+    else : gluPerspective(45 + 15 * VIEW, 1, 0, 2*h)
     
 
-    glTranslatef(0,0,-4)
+    glTranslatef(0,0,-h)
 
     glBegin(GL_QUADS)
 
+
     glColor3f(0,1,0)
-    glVertex3f( 1, 1,-1)
-    glVertex3f(-1, 1,-1)
-    glVertex3f(-1, 1, 1)
-    glVertex3f( 1, 1, 1) 
+    glVertex3f( h, h,-h)
+    glVertex3f(-h, h,-h)
+    glVertex3f(-h, h, h)
+    glVertex3f( h, h, h) 
 
     glColor3f(1,0,0)
-    glVertex3f( 1,-1, 1)
-    glVertex3f(-1,-1, 1)
-    glVertex3f(-1,-1,-1)
-    glVertex3f( 1,-1,-1) 
+    glVertex3f( h,-h, h)
+    glVertex3f(-h,-h, h)
+    glVertex3f(-h,-h,-h)
+    glVertex3f( h,-h,-h) 
 
     glColor3f(1,1,0)
-    glVertex3f( 1,-1,-1)
-    glVertex3f(-1,-1,-1)
-    glVertex3f(-1, 1,-1)
-    glVertex3f( 1, 1,-1)
+    glVertex3f( h,-h,-h)
+    glVertex3f(-h,-h,-h)
+    glVertex3f(-h, h,-h)
+    glVertex3f( h, h,-h)
 
     glColor3f(0,0,1)
-    glVertex3f(-1, 1, 1) 
-    glVertex3f(-1, 1,-1)
-    glVertex3f(-1,-1,-1) 
-    glVertex3f(-1,-1, 1) 
+    glVertex3f(-h, h, h) 
+    glVertex3f(-h, h,-h)
+    glVertex3f(-h,-h,-h) 
+    glVertex3f(-h,-h, h) 
 
     glColor3f(1,0,1)
-    glVertex3f( 1, 1,-1) 
-    glVertex3f( 1, 1, 1)
-    glVertex3f( 1,-1, 1)
-    glVertex3f( 1,-1,-1)
+    glVertex3f( h, h,-h) 
+    glVertex3f( h, h, h)
+    glVertex3f( h,-h, h)
+    glVertex3f( h,-h,-h)
+
+    # glColor3f(1,1,1)
+    # glVertex3f( 0,-h, h)
+    # glVertex3f(-h,-h, h)
+    # glVertex3f(-h, 0, h)
+    # glVertex3f( 0, 0, h)
 
     glEnd()
     glutSwapBuffers()	 
+
+
  
 def main():
  
