@@ -1,0 +1,56 @@
+digraph G {
+ rankdir=LR;
+
+  node_1[label="Session -> &bull;FactsQuestion\nSession -> &bull;Question\nSession -> &bull;(Session)Session\nFacts -> &bull;FactFacts\nFacts -> &bull;Fact\nFact -> &bull;!STRING\nQuestion -> &bull;?STRING"];
+  node_2[label="Session -> Facts&bull;Question\nQuestion -> &bull;?STRING"];
+  node_3[label="Session -> FactsQuestion&bull;"];
+  node_4[label="Session -> Question&bull;"];
+  node_5[label="Session -> &bull;FactsQuestion\nSession -> &bull;Question\nSession -> &bull;(Session)Session\nSession -> (&bull;Session)Session\nFacts -> &bull;FactFacts\nFacts -> &bull;Fact\nFact -> &bull;!STRING\nQuestion -> &bull;?STRING"];
+  node_6[label="Session -> (Session&bull;)Session"];
+  node_7[label="Session -> &bull;FactsQuestion\nSession -> &bull;Question\nSession -> &bull;(Session)Session\nSession -> (Session)&bull;Session\nFacts -> &bull;FactFacts\nFacts -> &bull;Fact\nFact -> &bull;!STRING\nQuestion -> &bull;?STRING"];
+  node_8[label="Session -> (Session)Session&bull;"];
+  node_9[label="Facts -> &bull;FactFacts\nFacts -> Fact&bull;Facts\nFacts -> &bull;Fact\nFacts -> Fact&bull;\nFact -> &bull;!STRING"];
+  node_10[label="Facts -> FactFacts&bull;"];
+  node_11[label="Fact -> !&bull;STRING\nSTRING -> &bull;a\nSTRING -> &bull;b\nSTRING -> &bull;c"];
+  node_12[label="Fact -> !STRING&bull;"];
+  node_13[label="STRING -> a&bull;"];
+  node_14[label="STRING -> b&bull;"];
+  node_15[label="STRING -> c&bull;"];
+  node_16[label="Question -> ?&bull;STRING\nSTRING -> &bull;a\nSTRING -> &bull;b\nSTRING -> &bull;c"];
+  node_17[label="Question -> ?STRING&bull;"];
+
+  node_1 -> node_2 [label="Facts"];
+  node_1 -> node_4 [label="Question"];
+  node_1 -> node_5 [label="("];
+  node_1 -> node_9 [label="Fact"];
+  node_1 -> node_11 [label="!"];
+  node_1 -> node_16 [label="?"];
+  node_2 -> node_3 [label="Question"];
+  node_2 -> node_16 [label="?"];
+  node_5 -> node_2 [label="Facts"];
+  node_5 -> node_4 [label="Question"];
+  node_5 -> node_5 [label="("];
+  node_5 -> node_6 [label="Session"];
+  node_5 -> node_9 [label="Fact"];
+  node_5 -> node_11 [label="!"];
+  node_5 -> node_16 [label="?"];
+  node_6 -> node_7 [label=")"];
+  node_7 -> node_2 [label="Facts"];
+  node_7 -> node_4 [label="Question"];
+  node_7 -> node_5 [label="("];
+  node_7 -> node_8 [label="Session"];
+  node_7 -> node_9 [label="Fact"];
+  node_7 -> node_11 [label="!"];
+  node_7 -> node_16 [label="?"];
+  node_9 -> node_9 [label="Fact"];
+  node_9 -> node_10 [label="Facts"];
+  node_9 -> node_11 [label="!"];
+  node_11 -> node_12 [label="STRING"];
+  node_11 -> node_13 [label="a"];
+  node_11 -> node_14 [label="b"];
+  node_11 -> node_15 [label="c"];
+  node_16 -> node_13 [label="a"];
+  node_16 -> node_14 [label="b"];
+  node_16 -> node_15 [label="c"];
+  node_16 -> node_17 [label="STRING"];
+}
