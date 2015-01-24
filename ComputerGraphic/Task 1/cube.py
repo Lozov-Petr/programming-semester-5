@@ -1,6 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
+from math import tan, pi
  
 VIEW = 0
          
@@ -15,14 +16,16 @@ def DrawScene():
     glViewport(0, 0, 500, 500)
     glLoadIdentity()
 
-    h = 1
+    h = 100
 
-    # glMatrixMode(GL_PROJECTION)
-    if VIEW == 0 : glOrtho(-h, h, -h, h, 0, 2*h)
-    else : gluPerspective(45 + 15 * VIEW, 1, 0, 2*h)
-    
-
-    glTranslatef(0,0,-h)
+    if VIEW == 0 : 
+        glOrtho(-2*h, 2*h, -2*h, 2*h, -2*h, 2*h)
+    else : 
+        alpha = 15 * VIEW
+        focusZ = - (h + 2 * h / tan(pi * alpha / 360))
+        
+        gluPerspective(alpha, 1, 0, 2*h)
+        glTranslatef(0,0,focusZ)
 
     glBegin(GL_QUADS)
 
@@ -56,12 +59,6 @@ def DrawScene():
     glVertex3f( h, h, h)
     glVertex3f( h,-h, h)
     glVertex3f( h,-h,-h)
-
-    # glColor3f(1,1,1)
-    # glVertex3f( 0,-h, h)
-    # glVertex3f(-h,-h, h)
-    # glVertex3f(-h, 0, h)
-    # glVertex3f( 0, 0, h)
 
     glEnd()
     glutSwapBuffers()	 
